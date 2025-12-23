@@ -62,7 +62,7 @@ void sendPacket(int pitch, int yaw, uint8_t mode) {
 }
 
 /* ----------- РЕЖИМ ОЖИДАНИЯ ----------- */
-void waitMode() {
+void waitModeNGoBack() {
   sendPacket(0, 0, MODE_WAIT);
 }
 
@@ -105,7 +105,7 @@ void setup() {
 
 void loop() {
 
-  waitMode();
+  waitModeNGoBack();
   delay(DELAY_TIME);
 
   horizontalScan();
@@ -120,7 +120,7 @@ void loop() {
   diagonalScan2();
   delay(DELAY_TIME);
 
-  waitMode();
+  waitModeNGoBack();
   delay(DELAY_TIME);
 }
 
