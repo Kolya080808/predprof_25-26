@@ -3,23 +3,14 @@
 
 RF24 radio(9, 10);   // D9, D10
 
-const byte address[6] = "RADIO"; // если надо поменяем, я пока так сделал, это канал, так что и на приемнике тоже поменять придется
-
-const uint8_t DEVICE_ID = 1; // тоже если надо поменяем, это вообще не важно
+const byte address[6] = "RADIO"; 
+const uint8_t DEVICE_ID = 1;
 
 /*
 Каждое передаваемое сообщение должно содержать:
 ● Уникальный идентификатор устройства;
 ● Текущие углы наклона и поворота;
 ● Состояние режима работы.
-
-Последовательно пройти три режима:
-● Горизонтальный скан: при фиксированном угле 0° по горизонтали — изменение угла по вертикали от -40° до +40°;
-● Вертикальный скан: при фиксированном угле 0° по вертикали — изменение по горизонтали от -40° до +40°;
-● Диагональный скан: от позиции (-40°, -40°) до (40°, 40°);
-● Диагональный скан: от позиции (-40°, 40°) до (40°, -40°).
-
-● Возврат к начальному состоянию и ожидание нового сигнала.
 */
 
 struct Packet {
@@ -29,7 +20,13 @@ struct Packet {
   uint8_t mode;
 };
 
+struct AckPacket {
+  uint8_t id;
+  uint8_t status; // 1 = принято
+};
+
 Packet packet;
+AckPacket ack;
 
 const int DELAY_TIME = 3000; // 3 секунды по ТЗ
 
@@ -42,14 +39,14 @@ enum Mode {
   MODE_DIAG2 = 4
 };
 
-/* ----------- ОТПРАВКА ПАКЕТА ----------- */
+/* ----------- ОТПРАВКА ПАКЕТА С ОЖИДАНИЕМ ACK ----------- */
 void sendPacket(int pitch, int yaw, uint8_t mode) {
   packet.id = DEVICE_ID;
   packet.pitch = pitch;
   packet.yaw = yaw;
   packet.mode = mode;
 
-  radio.write(&packet, sizeof(packet));
+  bool success = radio.write(&packet, sizeof(packet));
 
   Serial.print("Sent: ID=");
   Serial.print(packet.id);
@@ -59,6 +56,16 @@ void sendPacket(int pitch, int yaw, uint8_t mode) {
   Serial.print(packet.yaw);
   Serial.print(" mode=");
   Serial.println(packet.mode);
+
+  if (success && radio.isAckPayloadAvailable()) {
+    radio.read(&ack, sizeof(ack));
+    Serial.print("ACK received from ID=");
+    Serial.print(ack.id);
+    Serial.print(" status=");
+    Serial.println(ack.status);
+  } else {
+    Serial.println("No ACK received");
+  }
 }
 
 /* ----------- РЕЖИМ ОЖИДАНИЯ ----------- */
@@ -68,8 +75,8 @@ void waitModeNGoBack() {
 
 /* ----------- ГОРИЗОНТАЛЬНЫЙ СКАН ----------- */
 void horizontalScan() {
-  sendPacket(0, -40, MODE_HOR); // начальная точка
-  sendPacket(0,  40, MODE_HOR); // конечная точка
+  sendPacket(0, -40, MODE_HOR);
+  sendPacket(0,  40, MODE_HOR);
 }
 
 /* ----------- ВЕРТИКАЛЬНЫЙ СКАН ----------- */
@@ -91,11 +98,12 @@ void diagonalScan2() {
 }
 
 void setup() {
-  Serial.begin(9600); // логи
+  Serial.begin(9600);
 
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);
   radio.setDataRate(RF24_1MBPS);
+  radio.enableAckPayload();
   radio.openWritingPipe(address);
   radio.stopListening();
 
