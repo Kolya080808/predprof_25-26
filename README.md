@@ -99,5 +99,5 @@
 
 ## Ссылки на документацию и отчет
 
-- Документация: https://cloud.predprof.olimpiada.ru/index.php/s/YzEzw9Se8cmYfWE **или** https://github.com/Kolya080808/predprof_25-26/blob/main/%D1%82%D0%B7.pdf \
+- Документация: https://cloud.predprof.olimpiada.ru/index.php/s/YzEzw9Se8cmYfWE **или** https://github.com/Kolya080808/predprof_25-26/blob/main/%D1%82%D0%B7.pdf 
 - Отчет: 
