@@ -46,25 +46,31 @@ void sendPacket(int pitch, int yaw, uint8_t mode) {
   packet.yaw = yaw;
   packet.mode = mode;
 
-  bool success = radio.write(&packet, sizeof(packet));
+  bool ackReceived = false;
 
-  Serial.print("Sent: ID=");
-  Serial.print(packet.id);
-  Serial.print(" pitch=");
-  Serial.print(packet.pitch);
-  Serial.print(" yaw=");
-  Serial.print(packet.yaw);
-  Serial.print(" mode=");
-  Serial.println(packet.mode);
+  while (!ackReceived) {
+    bool success = radio.write(&packet, sizeof(packet));
 
-  if (success && radio.isAckPayloadAvailable()) {
-    radio.read(&ack, sizeof(ack));
-    Serial.print("ACK received from ID=");
-    Serial.print(ack.id);
-    Serial.print(" status=");
-    Serial.println(ack.status);
-  } else {
-    Serial.println("No ACK received");
+    Serial.print("Sent: ID=");
+    Serial.print(packet.id);
+    Serial.print(" pitch=");
+    Serial.print(packet.pitch);
+    Serial.print(" yaw=");
+    Serial.print(packet.yaw);
+    Serial.print(" mode=");
+    Serial.println(packet.mode);
+
+    if (success && radio.isAckPayloadAvailable()) {
+      radio.read(&ack, sizeof(ack));
+      Serial.print("ACK received from ID=");
+      Serial.print(ack.id);
+      Serial.print(" status=");
+      Serial.println(ack.status);
+
+      ackReceived = true;
+    } else {
+      Serial.println("No ACK received, retrying...");
+    }
   }
 }
 
@@ -130,5 +136,7 @@ void loop() {
 
   waitModeNGoBack();
   delay(DELAY_TIME);
+
+  delay(10000);
 }
 
