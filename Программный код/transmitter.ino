@@ -70,6 +70,7 @@ void sendPacket(int pitch, int yaw, uint8_t mode) {
       ackReceived = true;
     } else {
       Serial.println("No ACK received, retrying...");
+      delay(100);
     }
   }
 }
