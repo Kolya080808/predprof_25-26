@@ -28,7 +28,7 @@ struct AckPacket {
 Packet packet;
 AckPacket ack;
 
-const int DELAY_TIME = 3000; // 3 секунды по ТЗ
+const unsigned long DELAY_TIME = 3000; // 3 секунды по ТЗ
 
 /* ----------- РЕЖИМЫ ----------- */
 enum Mode {
