@@ -6,7 +6,7 @@ RF24 radio(9, 10);   // D9, D10
 const byte address[] = "RADIO"; 
 const uint8_t DEVICE_ID = 1;
 
-const uint8_t buttonPin = 6;
+const uint8_t buttonPin = 2;
 
 /* ---------- ПАКЕТЫ ---------- */
 struct Packet {
