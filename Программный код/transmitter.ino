@@ -3,7 +3,7 @@
 
 RF24 radio(9, 10);   // D9, D10
 
-const byte address[6] = "RADIO"; 
+const byte address[] = "RADIO"; 
 const uint8_t DEVICE_ID = 1;
 
 /*
