@@ -6,13 +6,9 @@ RF24 radio(9, 10);   // D9, D10
 const byte address[] = "RADIO"; 
 const uint8_t DEVICE_ID = 1;
 
-/*
-Каждое передаваемое сообщение должно содержать:
-● Уникальный идентификатор устройства;
-● Текущие углы наклона и поворота;
-● Состояние режима работы.
-*/
+const uint8_t buttonPin = 6;
 
+/* ---------- ПАКЕТЫ ---------- */
 struct Packet {
   uint8_t id;
   int8_t pitch;
@@ -28,9 +24,9 @@ struct AckPacket {
 Packet packet;
 AckPacket ack;
 
-const unsigned long DELAY_TIME = 3000; // 3 секунды по ТЗ
+const unsigned long DELAY_TIME = 3000; // 3 секунды
 
-/* ----------- РЕЖИМЫ ----------- */
+/* ---------- РЕЖИМЫ ---------- */
 enum Mode {
   MODE_WAIT  = 0,
   MODE_HOR   = 1,
@@ -39,7 +35,11 @@ enum Mode {
   MODE_DIAG2 = 4
 };
 
-/* ----------- ОТПРАВКА ПАКЕТА С ОЖИДАНИЕМ ACK ----------- */
+/* ---------- СОСТОЯНИЕ СИСТЕМЫ ---------- */
+bool systemEnabled = false;
+bool lastButtonState = HIGH;
+
+/* ---------- ОТПРАВКА С ACK ---------- */
 void sendPacket(int8_t pitch, int8_t yaw, uint8_t mode) {
   packet.id = DEVICE_ID;
   packet.pitch = pitch;
@@ -48,7 +48,7 @@ void sendPacket(int8_t pitch, int8_t yaw, uint8_t mode) {
 
   bool ackReceived = false;
 
-  while (!ackReceived) {
+  while (!ackReceived && systemEnabled) {
     bool success = radio.write(&packet, sizeof(packet));
 
     Serial.print("Sent: ID=");
@@ -66,7 +66,6 @@ void sendPacket(int8_t pitch, int8_t yaw, uint8_t mode) {
       Serial.print(ack.id);
       Serial.print(" status=");
       Serial.println(ack.status);
-
       ackReceived = true;
     } else {
       Serial.println("No ACK received, retrying...");
@@ -75,38 +74,39 @@ void sendPacket(int8_t pitch, int8_t yaw, uint8_t mode) {
   }
 }
 
-/* ----------- РЕЖИМ ОЖИДАНИЯ ----------- */
+/* ---------- ДВИЖЕНИЯ ---------- */
 void waitModeNGoBack() {
   sendPacket(0, 0, MODE_WAIT);
 }
 
-/* ----------- ГОРИЗОНТАЛЬНЫЙ СКАН ----------- */
 void horizontalScan() {
   sendPacket(0, -40, MODE_HOR);
   sendPacket(0,  40, MODE_HOR);
 }
 
-/* ----------- ВЕРТИКАЛЬНЫЙ СКАН ----------- */
 void verticalScan() {
   sendPacket(-40, 0, MODE_VER);
   sendPacket( 40, 0, MODE_VER);
 }
 
-/* ----------- ДИАГОНАЛЬ 1 ----------- */
 void diagonalScan1() {
   sendPacket(-40, -40, MODE_DIAG1);
   sendPacket( 40,  40, MODE_DIAG1);
 }
 
-/* ----------- ДИАГОНАЛЬ 2 ----------- */
 void diagonalScan2() {
   sendPacket(-40,  40, MODE_DIAG2);
   sendPacket( 40, -40, MODE_DIAG2);
 }
 
+/* ---------- SETUP ---------- */
 void setup() {
   Serial.begin(9600);
 
+  pinMode(buttonPin, INPUT_PULLUP);
+
+  Serial.println("Button started.");
+  
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);
   radio.setDataRate(RF24_1MBPS);
@@ -116,9 +116,23 @@ void setup() {
 
   Serial.println("NRF24 transmitter started.");
   Serial.println("All modules initialized.");
+  Serial.println("Waiting for button...");
 }
 
+/* ---------- LOOP ---------- */
 void loop() {
+
+  bool buttonState = digitalRead(buttonPin);
+
+  if (lastButtonState == HIGH && buttonState == LOW) {
+    systemEnabled = !systemEnabled;
+    Serial.println(systemEnabled ? "SYSTEM ENABLED" : "SYSTEM DISABLED");
+    delay(200);
+  }
+  lastButtonState = buttonState;
+
+
+  if (!systemEnabled) return;
 
   waitModeNGoBack();
   delay(DELAY_TIME);
@@ -137,7 +151,4 @@ void loop() {
 
   waitModeNGoBack();
   delay(DELAY_TIME);
-
-  delay(10000);
 }
-
