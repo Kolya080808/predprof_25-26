@@ -1,8 +1,13 @@
 #include <SPI.h>
 #include <RF24.h>
+#include <Servo.h>
+
+const uint8_t laserPin = 2;
+
+const uint8_t startAngle = 90; 
 
 RF24 radio(9, 10);   // D9, D10
-const byte address[6] = "RADIO";
+const byte address[] = "RADIO";
 
 
 struct Packet {
@@ -20,8 +25,31 @@ struct AckPacket {
 Packet packet;
 AckPacket ack;
 
+Servo servo1;
+Servo servo2;
+
+uint8_t servoAngles(int8_t angle) { // сервопривод не умеет поворачиваться на отрицательные углы, или тем более работать в системе координат, так что рассчет будет математическим
+  return startAngle + angle;
+}
+
+bool inFOV(int8_t angle) {
+  if (angle <= 40 && angle >= -40) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 void setup() {
   Serial.begin(9600);
+
+  servo1.attach(3);
+  servo2.attach(5);
+  servo1.write(startAngle);
+  servo2.write(startAngle);
+
+  pinMode(laserPin,OUTPUT);
+  digitalWrite(laserPin,HIGH);
 
   radio.begin();
   radio.setPALevel(RF24_PA_LOW);
@@ -53,6 +81,11 @@ void loop() {
     ack.status = 1;
 
     radio.writeAckPayload(0, &ack, sizeof(ack));
+    if (inFOV(packet.pitch) && inFOV(packet.yaw)) {
+      servo1.write(servoAngles(packet.yaw));
+      servo2.write(servoAngles(packet.pitch));
+    } else {
+      Serial.println("ANGLES NOT IN FOV!");
+    }
   }
 }
-
