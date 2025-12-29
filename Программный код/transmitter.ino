@@ -40,7 +40,7 @@ enum Mode {
 };
 
 /* ----------- ОТПРАВКА ПАКЕТА С ОЖИДАНИЕМ ACK ----------- */
-void sendPacket(int pitch, int yaw, uint8_t mode) {
+void sendPacket(int8_t pitch, int8_t yaw, uint8_t mode) {
   packet.id = DEVICE_ID;
   packet.pitch = pitch;
   packet.yaw = yaw;
