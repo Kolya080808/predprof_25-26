@@ -72,7 +72,8 @@
 
 - Приемник (CubeSat):
 
-<img width="1280" height="695" alt="image" src="https://github.com/user-attachments/assets/4b2f9ca1-e28c-4f45-9c6a-850c14bb190d" />
+<img width="1280" height="668" alt="image" src="https://github.com/user-attachments/assets/3dd30274-ec52-41bc-bf72-23d8743c403b" />
+
 
 - Передатчик:
 
