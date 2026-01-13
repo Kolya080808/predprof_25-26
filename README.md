@@ -30,10 +30,12 @@
 |  Лазерный модуль KY-008 Arduino |      1     |       198 ₽      |  https://www.ozon.ru/product/lazernyy-modul-ky-008-arduino-1167219696/ |
 |     Ардуино НАНО V3.0 Type-C    |      1     |       468 ₽      |    https://www.ozon.ru/product/arduino-nano-v3-0-type-c-1420302632/    |
 | Сервопривод SG-90 180 градусов. |      2     |       338 ₽      | https://www.ozon.ru/product/servoprivod-sg-90-180-gradusov-1420391129/ |
+| Набор печатных макетных плат 2x8, 3х7, 4х6, 5х7, 7х9 см |      1     |       225 ₽       | https://www.ozon.ru/product/nabor-pechatnyh-maketnyh-plat-2x8-3h7-4h6-5h7-7h9-sm-dvuhstoronnyaya-dlya-payki-gsmin-pcb1-zelenyy-1415372440/ |
+|    Заклепки 4 x 10 мм 50 шт.    |      1     |       128 ₽       | https://www.ozon.ru/product/zaklepka-4-x-10-mm-50-sht-3244336600/ |
 
 
 
-Итого: 1004₽
+Итого: 1357 ₽
 
 ## Ссылки на скачивание файлов (нужно будет подождать после нажатия на ссылку 5-10 секунд), демонстрации.
 
