@@ -74,19 +74,16 @@ void runScanSequence() {
   for (int8_t y = -40; y <= 40; y += 10) {
     performStep(0, y, MODE_HOR);
   }
-  setPosition(0, 0); delay(500);
 
   // Вертикальный скан
   for (int8_t p = -40; p <= 40; p += 10) {
     performStep(p, 0, MODE_VER);
   }
-  setPosition(0, 0); delay(500);
 
   // Диагональный скан 1
   for (int8_t i = -40; i <= 40; i += 10) {
     performStep(i, i, MODE_DIAG1);
   }
-  setPosition(0, 0); delay(500);
 
   // Диагональный скан 2
   for (int8_t i = -40; i <= 40; i += 10) {
