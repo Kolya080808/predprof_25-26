@@ -11,46 +11,43 @@ RF24 radio(9, 10);
 const byte addressRx[] = "CMD01";
 const byte addressTx[] = "DATA1";
 
-struct CommandPacket {
-  uint8_t command;
-};
+char messange[8];
+
 struct TelemetryPacket {
-  uint8_t id;
-  int8_t pitch;
-  int8_t yaw;
-  uint8_t mode;
+  char id[4];
+  char mode[2];
+  char pitch[4];
+  char yaw[4];
 };
 
-CommandPacket cmd;
 TelemetryPacket telemetry;
-Servo servoYaw;
-Servo servoPitch;
+Servo servoYaw, servoPitch;
 
 const uint8_t DEVICE_ID = 101;
 const int STEP_DELAY = 3000;
+
+bool isRunning = false;
 
 enum Mode {
   MODE_IDLE   = 0,
   MODE_HOR    = 1,
   MODE_VER    = 2,
   MODE_DIAG1  = 3,
-  MODE_DIAG2  = 4
+  MODE_DIAG2  = 4,
 };
 
 uint8_t getServoAngle(int8_t angle) {
   return startAngle + angle;
 }
-
 void setPosition(int8_t pitch, int8_t yaw) {
   servoPitch.write(getServoAngle(pitch));
   servoYaw.write(getServoAngle(yaw));
 }
-
 void sendTelemetry(int8_t pitch, int8_t yaw, uint8_t mode) {
-  telemetry.id = DEVICE_ID;
-  telemetry.pitch = pitch;
-  telemetry.yaw = yaw;
-  telemetry.mode = mode;
+  itoa(DEVICE_ID,telemetry.id,10);
+  itoa(pitch,telemetry.pitch,10);
+  itoa(yaw,telemetry.yaw,10);
+  itoa(mode,telemetry.mode,10);
   radio.stopListening();
   radio.write(&telemetry, sizeof(telemetry));
   radio.startListening();
@@ -66,11 +63,11 @@ void performStep(int8_t pitch, int8_t yaw, uint8_t mode) {
 }
 
 void runScanSequence() {
-  for (int8_t y = -40; y <= 40; y += 10) {
-    performStep(0, y, MODE_HOR);
-  }
   for (int8_t p = -40; p <= 40; p += 10) {
-    performStep(p, 0, MODE_VER);
+    performStep(p, 0, MODE_HOR);
+  }
+  for (int8_t y = -40; y <= 40; y += 10) {
+    performStep(0, y, MODE_VER);
   }
   for (int8_t i = -40; i <= 40; i += 10) {
     performStep(i, i, MODE_DIAG1);
@@ -99,9 +96,11 @@ void setup() {
 
 void loop() {
   if (radio.available()) {
-    radio.read(&cmd, sizeof(cmd));
-    if (cmd.command == 1) {
+    radio.read(&messange, sizeof(messange));
+    if (!isRunning && String(messange) == "start") {
+      isRunning = true;
       runScanSequence();
+      isRunning = false;
     }
   }
 }
