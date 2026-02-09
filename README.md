@@ -120,7 +120,8 @@
 
 - Передатчик:
 
-<img width="1280" height="715" alt="image" src="https://github.com/user-attachments/assets/e64584d5-dd24-4443-b168-ddb19a3509c4" />
+<img width="1280" height="713" alt="image" src="https://github.com/user-attachments/assets/bbf712a9-cd93-4c79-9890-50ee39704b02" />
+
 
 #### Описание
 
