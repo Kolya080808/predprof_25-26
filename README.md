@@ -21,5 +21,5 @@
 ## Ссылки
 
 - Документация: https://cloud.predprof.olimpiada.ru/index.php/s/YzEzw9Se8cmYfWE **или** https://github.com/Kolya080808/predprof_25-26/blob/main/%D1%82%D0%B7.pdf 
-- Отчет: 
+- Отчет: https://github.com/Kolya080808/predprof_25-26/blob/main/%D0%9E%D0%A2%D0%A7%D0%95%D0%A2%20%D0%9F%D0%A0%D0%95%D0%94%D0%9F%D0%A0%D0%9E%D0%A4.pdf
 - Ролик: 
